@@ -1,9 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Jan 28 00:44:25 2021
 
-@author: chakati
-"""
 import cv2
 import numpy as np
 import os
