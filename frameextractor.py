@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Jan 28 00:52:08 2021
-
-@author: chakati
-"""
-# code to get the key frame from the video and save it as a png file.
 
 import cv2
 import os
@@ -27,5 +20,9 @@ def frameExtractor(videopath, frames_path, count):
     ret, frame = cap.read()
     # cv2.imwrite(frames_path + "/%#05d.png" % (count+1), frame)
     filename = frames_path + "%#05d.png" % (count + 1)
+    if frame is None or frame.size == 0:
+        print(f"Error: Failed to extract frame from {video_path}. Skipping.")
+        return None  # Return None instead of crashing
+
     cv2.imwrite(filename, frame)
     return filename
