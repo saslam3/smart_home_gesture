@@ -1,28 +1,27 @@
-
 import cv2
 import os
 
-"""
-videopath : path of the video file
-frames_path: path of the directory to which the frames are saved
-count: to assign the video order to the frame.
-"""
-
-
-def frameExtractor(videopath, frames_path, count):
-    if not os.path.exists(frames_path):
-        os.mkdir(frames_path)
+def frameExtractor(videopath, output_folder, frame_number):
+    """
+    Extracts a specific frame from a video and saves it as an image.
+    """
     cap = cv2.VideoCapture(videopath)
-    video_length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) - 1
-    frame_no = int(video_length / 2)
-    # print("Extracting frame..\n")
-    cap.set(1, frame_no)
+    
+    if not cap.isOpened():
+        print(f"Error: Cannot open video file {videopath}. Skipping.")
+        return None
+
+    cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
     ret, frame = cap.read()
-    # cv2.imwrite(frames_path + "/%#05d.png" % (count+1), frame)
-    filename = frames_path + "%#05d.png" % (count + 1)
-    if frame is None or frame.size == 0:
-        print(f"Error: Failed to extract frame from {video_path}. Skipping.")
+    
+    if not ret or frame is None:
+        print(f"Error: Failed to extract frame from {videopath}. Skipping.")
         return None  # Return None instead of crashing
 
+    os.makedirs(output_folder, exist_ok=True)
+    filename = os.path.join(output_folder, f"frame_{frame_number}.jpg")
+
     cv2.imwrite(filename, frame)
-    return filename
+    cap.release()
+    
+    return filename  # Return the file path if successful
