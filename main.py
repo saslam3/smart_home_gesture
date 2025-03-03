@@ -55,8 +55,13 @@ gesture_data = [
 # ==========================
 def extract_feature(folder_path, input_file, mid_frame_counter):
     """ Extract features from the middle frame of a video """
-    middle_image = cv2.imread(frameExtractor(folder_path + input_file, folder_path + "frames/", mid_frame_counter),
-                              cv2.IMREAD_GRAYSCALE)
+    frame_path = frameExtractor(folder_path + input_file, folder_path + "frames/", mid_frame_counter)
+
+    if frame_path is None:
+        print(f"Warning: Skipping {input_file} due to failed frame extraction.")
+        return None  # Return None instead of crashing
+
+    middle_image = cv2.imread(frame_path, cv2.IMREAD_GRAYSCALE)
     feature_extracted = HandShapeFeatureExtractor.extract_feature(
         HandShapeFeatureExtractor.get_instance(), middle_image)
     return feature_extracted
