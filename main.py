@@ -59,9 +59,13 @@ def extract_feature(folder_path, input_file, mid_frame_counter):
 
     if frame_path is None:
         print(f"Warning: Skipping {input_file} due to failed frame extraction.")
-        return None  # Return None instead of crashing
+        return None  # Skip processing if frame extraction fails
 
     middle_image = cv2.imread(frame_path, cv2.IMREAD_GRAYSCALE)
+    if middle_image is None:
+        print(f"Error: Could not read extracted frame for {input_file}")
+        return None  # Skip if the frame couldn't be read
+
     feature_extracted = HandShapeFeatureExtractor.extract_feature(
         HandShapeFeatureExtractor.get_instance(), middle_image)
     return feature_extracted
@@ -85,15 +89,18 @@ train_data_path = "traindata/"
 if not os.path.exists(train_data_path):
     raise FileNotFoundError(f"Error: Training data folder '{train_data_path}' is missing.")
 
-for count, file in enumerate(os.listdir(train_data_path)):
-    if not file.startswith('frames'):
-        gesture_detail = get_gesture_by_file_name(file)
-        extracted_feature = extract_feature(train_data_path, file, count)
+train_files = [file for file in os.listdir(train_data_path) if file.endswith(".mp4")]
+if not train_files:
+    raise FileNotFoundError(f"Error: No training videos found in '{train_data_path}'.")
 
-        if extracted_feature is not None:
-            featureVectorList.append(GestureFeature(gesture_detail, extracted_feature))
-        else:
-            print(f"Warning: Feature extraction failed for {file}")
+for count, file in enumerate(train_files):
+    gesture_detail = get_gesture_by_file_name(file)
+    extracted_feature = extract_feature(train_data_path, file, count)
+
+    if extracted_feature is not None:
+        featureVectorList.append(GestureFeature(gesture_detail, extracted_feature))
+    else:
+        print(f"Warning: Feature extraction failed for {file}")
 
 # ==========================
 # Gesture Recognition
@@ -126,7 +133,7 @@ results_file_path = os.path.join(os.path.dirname(__file__), "results.csv")
 if not os.path.exists(test_data_path):
     raise FileNotFoundError(f"Error: Test data folder '{test_data_path}' is missing.")
 
-test_files = [file for file in os.listdir(test_data_path) if not file.startswith('frames')]
+test_files = [file for file in os.listdir(test_data_path) if file.endswith(".mp4")]
 if not test_files:
     raise FileNotFoundError("Error: No test videos found in the 'test/' folder.")
 
