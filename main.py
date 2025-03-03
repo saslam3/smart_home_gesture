@@ -152,6 +152,10 @@ with open('results.csv', 'w', newline='') as results_file:
             recognized_gesture_detail = gesture_detection(test_data_path, test_file, test_count)
             test_count = test_count + 1
 
+            if recognized_gesture_detail is None:
+                print(f"Warning: Gesture could not be recognized for file {test_file}")
+                recognized_gesture_detail = GestureDetails("Unknown", "Unknown Gesture", "-1")
+
             data_writer.writerow({
                 'Gesture_Video_File_Name': test_file,
                 'Gesture_Name': recognized_gesture_detail.gesture_name,
