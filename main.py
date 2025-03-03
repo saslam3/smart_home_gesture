@@ -135,7 +135,12 @@ if not os.path.exists(test_data_path):
 
 test_files = [file for file in os.listdir(test_data_path) if file.endswith(".mp4")]
 if not test_files:
-    raise FileNotFoundError("Error: No test videos found in the 'test/' folder.")
+    print("Warning: No test files found. Creating empty results.csv.")
+    with open(results_file_path, 'w', newline='') as empty_file:
+        writer = csv.writer(empty_file)
+        writer.writerow(["Gesture_Video_File_Name", "Gesture_Name", "Output_Label"])
+    print(f"✅ Empty results.csv created at {results_file_path}")
+    exit()
 
 # Generate results.csv
 with open(results_file_path, 'w', newline='') as results_file:
